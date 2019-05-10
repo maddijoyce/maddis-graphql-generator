@@ -1,5 +1,5 @@
 {
-  "name": "@maddijoyce/graphql-generator",
+  "name": "maddis-graphql-generator",
   "version": "1.0.0",
   "license": "UNLICENSED",
   "bin": {
