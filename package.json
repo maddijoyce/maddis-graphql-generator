@@ -2,6 +2,7 @@
   "name": "maddis-graphql-generator",
   "version": "1.0.0",
   "license": "UNLICENSED",
+  "repository": "https://github.com/maddijoyce/maddis-graphql-generator",
   "bin": {
     "generate-graphql-files": "./lib/index.js"
   },
