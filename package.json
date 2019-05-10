@@ -1,0 +1,18 @@
+{
+  "name": "@maddijoyce/graphql-generator",
+  "version": "2.0.0",
+  "bin": {
+    "generate-graphql-files": "./lib/index.js",
+    "build": "tsc -b --verbose"
+  },
+  "dependencies": {
+    "@types/graphql": "^14.2.0",
+    "@types/rimraf": "^2.0.2",
+    "apollo": "^2.8.3",
+    "commander": "^2.20.0",
+    "graphql": "^14.2.1",
+    "graphql-tag": "^2.10.1",
+    "rimraf": "^2.6.3",
+    "typescript": "^3.4.5"
+  }
+}
