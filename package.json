@@ -1,11 +1,15 @@
 {
   "name": "maddis-graphql-generator",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "UNLICENSED",
   "repository": "https://github.com/maddijoyce/maddis-graphql-generator",
   "bin": {
     "generate-graphql-files": "./lib/index.js"
   },
+  "files": [
+    "lib",
+    "files"
+  ],
   "scripts": {
     "build": "tsc -b --verbose"
   },
