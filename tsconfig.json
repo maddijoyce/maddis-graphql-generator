@@ -18,7 +18,7 @@
     "strictNullChecks": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "types": ["react", "node", "jest"]
+    "types": ["node"]
   },
   "include": ["src/**/*"],
   "references": []
