@@ -1,6 +1,6 @@
 {
   "name": "maddis-graphql-generator",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "license": "UNLICENSED",
   "repository": "https://github.com/maddijoyce/maddis-graphql-generator",
   "bin": {
@@ -20,9 +20,9 @@
     "@types/webpack": "^4.4.31",
     "apollo": "^2.8.3",
     "commander": "^2.20.0",
-    "rimraf": "^2.6.3",
     "graphql": "^14.2.1",
-    "graphql-tag": "^2.10.1"
+    "graphql-tag": "^2.10.1",
+    "rimraf": "^2.6.3"
   },
   "devDependencies": {
     "typescript": "^3.4.5"
