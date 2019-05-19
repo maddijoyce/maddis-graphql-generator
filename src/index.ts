@@ -6,12 +6,10 @@ import * as fs from "fs";
 import * as glob from "glob";
 import * as path from "path";
 import * as rimraf from "rimraf";
-import { promisify } from "util";
-import * as webpack from "webpack";
+import * as graphql from "graphql";
 
-const webpackP = promisify(webpack);
-
-const main = async () => {
+const directory = fs.mkdtempSync(path.join(__dirname, "../tmp"));
+try {
   commander
     .version("0.0.1")
     .option("-s, --schema <file>", "Schema File")
@@ -32,59 +30,38 @@ const main = async () => {
   if (!fs.existsSync(queriesFolder))
     throw new Error(`Queries folder ${commander.queries} doesn't exist`);
 
-  const directory = fs.mkdtempSync(path.join(__dirname, "../tmp"));
-  const combinedSchema = path.join(directory, "schema.tmp.graphql");
-
-  fs.writeFileSync(combinedSchema, fs.readFileSync(schemaFile));
-  fs.appendFileSync(combinedSchema, "\n");
-  fs.appendFileSync(
-    combinedSchema,
-    fs.readFileSync(path.join(__dirname, "../files/scalars.graphql"))
-  );
-
-  const schemaTypes = path.join(directory, "types.tmp.ts");
+  const outputTypes = path.join(directory, "query-types.ts");
   execFileSync(path.join(require.resolve("apollo"), "../../../.bin/apollo"), [
     "client:codegen",
     "--localSchemaFile",
-    combinedSchema,
+    schemaFile,
     "--target",
     "typescript",
     "--addTypename",
     "--outputFlat",
-    "--passthroughCustomScalars",
-    schemaTypes
+    outputTypes
   ]);
 
-  const outputTypes = path.join(directory, "query-types.ts");
-  fs.writeFileSync(outputTypes, fs.readFileSync(schemaTypes));
-  fs.appendFileSync(outputTypes, "\n");
-  fs.appendFileSync(
-    outputTypes,
-    fs.readFileSync(path.join(__dirname, "../files/scalars.ts"))
-  );
-
-  fs.unlinkSync(combinedSchema);
-  fs.unlinkSync(schemaTypes);
-
   const gqlFiles = glob.sync(path.join(queriesFolder, "**", "*.graphql"));
-  const gqlFilenames = gqlFiles
-    .map(
-      f =>
-        `'${f
-          .replace(`${queriesFolder}/`, "")
-          .replace(/(^\.\/queries\/|fragments\/|\.graphql$)/g, "")}'`
-    )
-    .join(",");
-  const typedArray = `export const manifest = [${gqlFilenames}] as [${gqlFilenames}];`;
-  fs.writeFileSync(path.join(directory, "manifest.ts"), typedArray);
+  const gqlFilenames = gqlFiles.map(f => {
+    const variable = f
+      .replace(`${queriesFolder}/`, "")
+      .replace(/\.graphql$/g, "");
+    const value = graphql.parse(fs.readFileSync(f).toString(), {
+      noLocation: true
+    });
+    return `export const ${variable}: DocumentNode = ${JSON.stringify(value)}`;
+  });
+  gqlFilenames.unshift('import { DocumentNode } from "graphql"');
+
+  fs.writeFileSync(
+    path.join(directory, "query-documents.ts"),
+    gqlFilenames.join("\n")
+  );
 
   fs.copyFileSync(
     path.join(__dirname, "../files/index.ts"),
     path.join(directory, "index.ts")
-  );
-  fs.copyFileSync(
-    path.join(__dirname, "../files/types.ts"),
-    path.join(directory, "types.ts")
   );
 
   fs.writeFileSync(
@@ -118,49 +95,11 @@ const main = async () => {
     "--build",
     path.join(directory, "tsconfig.json")
   ]);
-
-  const queryDirectory = path.join(directory, "queries");
-  fs.mkdirSync(queryDirectory);
-  for (const file of gqlFiles) {
-    fs.copyFileSync(file, path.join(queryDirectory, path.basename(file)));
-  }
-  fs.copyFileSync(
-    path.join(__dirname, "../files/bundler.js"),
-    path.join(queryDirectory, "index.js")
-  );
-  fs.copyFileSync(
-    path.join(libFolder, "manifest.js"),
-    path.join(queryDirectory, "manifest.js")
-  );
-
-  await webpackP([
-    {
-      entry: path.join(queryDirectory, "index.js"),
-      target: "node",
-      output: {
-        filename: "queries.bundle.js",
-        path: libFolder,
-        library: "index",
-        libraryTarget: "commonjs2"
-      },
-      resolve: {
-        extensions: [".js", ".graphql", ".gql"]
-      },
-      module: {
-        rules: [
-          {
-            test: /\.(graphql|gql)$/,
-            exclude: /node_modules/,
-            loader: "graphql-tag/loader"
-          }
-        ]
-      }
-    }
-  ]);
-
-  rimraf.sync(directory);
-};
-main().catch(e => {
+} catch (e) {
   console.error(e.message);
+  console.error(e.stdout.toString());
+  console.error(e.stderr.toString());
   process.exit(-1);
-});
+} finally {
+  rimraf.sync(directory);
+}

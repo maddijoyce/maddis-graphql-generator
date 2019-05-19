@@ -20,18 +20,14 @@
     "@types/webpack": "^4.4.31",
     "apollo": "^2.8.3",
     "commander": "^2.20.0",
-    "rimraf": "^2.6.3"
+    "rimraf": "^2.6.3",
+    "graphql": "^14.2.1",
+    "graphql-tag": "^2.10.1"
   },
   "devDependencies": {
-    "graphql": "^14.2.1",
-    "graphql-tag": "^2.10.1",
-    "typescript": "^3.4.5",
-    "webpack": "^4.31.0"
+    "typescript": "^3.4.5"
   },
   "peerDependencies": {
-    "graphql": "^14.2.1",
-    "graphql-tag": "^2.10.1",
-    "typescript": "^3.4.5",
-    "webpack": "^4.31.0"
+    "typescript": "^3.4.5"
   }
 }
