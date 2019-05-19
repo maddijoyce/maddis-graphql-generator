@@ -108,7 +108,8 @@ const main = async () => {
         noUnusedLocals: true,
         noUnusedParameters: true,
         rootDir: ".",
-        outDir: libFolder
+        outDir: libFolder,
+        types: ["node"]
       }
     })
   );
