@@ -1,6 +1,4 @@
-import * as QueryTypes from './query-types';
-import { IDocumentNodes } from './types';
-
-const QueryDocuments = require('./queries.bundle') as IDocumentNodes;
+import * as QueryTypes from "./query-types";
+import * as QueryDocuments from "./query-documents";
 
 export { QueryDocuments, QueryTypes };
