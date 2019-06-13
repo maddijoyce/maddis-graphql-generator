@@ -1,6 +1,6 @@
 {
   "name": "maddis-graphql-generator",
-  "version": "1.0.7",
+  "version": "1.0.9",
   "license": "UNLICENSED",
   "repository": "https://github.com/maddijoyce/maddis-graphql-generator",
   "bin": {
