@@ -30,11 +30,22 @@ try {
   if (!fs.existsSync(queriesFolder))
     throw new Error(`Queries folder ${commander.queries} doesn't exist`);
 
+  const tmpSchemaFile = path.join(directory, "schema.graphql");
+  fs.copyFileSync(schemaFile, tmpSchemaFile);
+  fs.appendFileSync(
+    tmpSchemaFile,
+    `
+    directive @aws_subscribe(
+      mutations: [String]
+    ) on FIELD_DEFINITION
+  `
+  );
+
   const outputTypes = path.join(directory, "query-types.ts");
   execFileSync(path.join(require.resolve("apollo"), "../../../.bin/apollo"), [
     "client:codegen",
     "--localSchemaFile",
-    schemaFile,
+    tmpSchemaFile,
     "--target",
     "typescript",
     "--addTypename",
